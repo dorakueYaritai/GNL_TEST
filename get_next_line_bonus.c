@@ -6,7 +6,7 @@
 /*   By: kakiba <kotto555555@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 13:10:57 by kakiba            #+#    #+#             */
-/*   Updated: 2022/08/28 18:43:31 by kakiba           ###   ########.fr       */
+/*   Updated: 2022/08/28 20:16:28 by kakiba           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ char	*get_next_line(int fd)
 		return (NULL);
 	if (remain[fd][0] != '\0')
 	{
-		allocate_size += ft_strlcpy_clear(buf, remain[fd], allocate_size);
-		ft_bzero(remain, allocate_size);
+		allocate_size += ft_strlcpy_clear(buf, remain[fd], BUFFER_SIZE);
+		ft_bzero(remain[fd], BUFFER_SIZE);
 	}
 	new_line = ft_strchr(buf, '\n', allocate_size - 1);
 	if (new_line == NULL)
@@ -37,7 +37,6 @@ char	*get_next_line(int fd)
 		if (new_line[1] != '\0')
 			ft_strlcpy_clear(remain[fd], new_line + 1, BUFFER_SIZE);
 		// ft_bzero(new_line + 1, allocate_size - 1);
-
 		return (ft_realloc(buf, allocate_size, (new_line - buf + 2)));
 	}
 	return (buf);
@@ -121,8 +120,20 @@ void	*ft_realloc(void *src, size_t src_size, size_t new_size)
 	dst = malloc(new_size);
 	if (src_size != 0 && dst)
 	{
-		((char *)dst)[new_size - 1] = '\0';
-		ft_strlcpy_clear((char *)dst, (char *)src, src_size);
+		if (src_size < new_size)
+		{
+			((char *)dst)[new_size - 1] = '\0';
+			ft_strlcpy_clear((char *)dst, (char *)src, src_size);
+		}
+		else
+		{
+			size_t	i;
+			for (i = 0; i + 1 < new_size; ++i)
+			{
+				((char *)dst)[i] = ((char *)src)[i];
+			}
+			((char *)dst)[i] = '\0';
+		}
 	}
 	free (src);
 	src = NULL;
