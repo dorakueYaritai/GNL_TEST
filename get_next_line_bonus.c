@@ -6,13 +6,13 @@
 /*   By: kakiba <kotto555555@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 13:10:57 by kakiba            #+#    #+#             */
-/*   Updated: 2022/08/28 20:16:28 by kakiba           ###   ########.fr       */
+/*   Updated: 2022/08/30 11:37:22 by kakiba           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
-//realloc で行われるfree で、remain が生じるときのみinvalid freeになっている
-//最後の行に勝手に改行を加えてしまっている（これ大きな問題じゃないか？）
+
+//static kouzoutai ni ireru
 char	*get_next_line(int fd)
 {
 	char		*buf;
@@ -24,14 +24,18 @@ char	*get_next_line(int fd)
 	buf = malloc(allocate_size);
 	if (!buf)
 		return (NULL);
+	new_line = NULL;
 	if (remain[fd][0] != '\0')
 	{
+		printf("remain ga kitayo [%s]\n", remain[fd]);
 		allocate_size += ft_strlcpy_clear(buf, remain[fd], BUFFER_SIZE);
 		ft_bzero(remain[fd], BUFFER_SIZE);
+		new_line = ft_strchr(buf, '\n', allocate_size - 1);
 	}
-	new_line = ft_strchr(buf, '\n', allocate_size - 1);
 	if (new_line == NULL)
 		buf = read_file(fd, buf, &new_line, &allocate_size);
+//	printf("[%s]\n", buf);
+	printf("[%d]\n", !!(new_line));
 	if (new_line)
 	{
 		if (new_line[1] != '\0')
@@ -39,11 +43,16 @@ char	*get_next_line(int fd)
 		// ft_bzero(new_line + 1, allocate_size - 1);
 		return (ft_realloc(buf, allocate_size, (new_line - buf + 2)));
 	}
-	return (buf);
+	else
+	{
+		ft_bzero(remain[fd], BUFFER_SIZE);
+		return (buf);
+	}
 }
 
+// read error to seijoukei ga same syori
 char	*read_file(int fd, char *buf, char **new_line,
-							size_t *allocate_size)
+				size_t *allocate_size)
 {
 	ssize_t	read_length;
 
@@ -56,7 +65,8 @@ char	*read_file(int fd, char *buf, char **new_line,
 		read_length = read(fd, buf + *allocate_size - BUFFER_SIZE - 1, \
 		BUFFER_SIZE);
 		*new_line = ft_strchr(&buf[*allocate_size - BUFFER_SIZE - 1], \
-			'\n', BUFFER_SIZE);
+			'\n', read_length);
+//		printf("[%d], [%d], [%d]", if (*allocate_size == BUFFER_SIZE + 1UL && \read_length <= 0 && !(*new_line)));
 		if (*allocate_size == BUFFER_SIZE + 1UL && \
 		read_length <= 0 && !(*new_line))
 		{
@@ -67,7 +77,11 @@ char	*read_file(int fd, char *buf, char **new_line,
 		*allocate_size += read_length;
 	}
 	if (read_length < BUFFER_SIZE && !(*new_line))
-		buf = ft_realloc(buf, *allocate_size - BUFFER_SIZE, *allocate_size);
+	{
+		buf = ft_realloc(buf, *allocate_size, *allocate_size - BUFFER_SIZE);
+		printf("last: [%s]", buf);
+	}
+	//	buf = ft_realloc(buf, *allocate_size - BUFFER_SIZE, *allocate_size);
 	return (buf);
 }
 
@@ -96,22 +110,23 @@ size_t	ft_strlcpy_clear(char *dst, char *src, size_t dstsize)
 	while (src[i] != '\0' && i + 1 < dstsize)
 	{
 		dst[i] = src[i];
-		// src[i] = '\0';
 		i++;
 	}
 	if (dstsize != 0)
 		dst[i] = '\0';
-	//while (i < dstsize)
-	//while (src[i] != '\0')
 	while (src[i] != '\0' && i < dstsize)
 	{
-		// src[i] = '\0';
 		i++;
 	}
 	return (i);
 }
 
 //after read, to stop Line112
+//newsizw = 0 notoki
+//realloc de kanketu 
+//error notokimo free suru?
+//error early return 
+//for ha strlcpy
 void	*ft_realloc(void *src, size_t src_size, size_t new_size)
 {
 	void	*dst;
@@ -120,9 +135,9 @@ void	*ft_realloc(void *src, size_t src_size, size_t new_size)
 	dst = malloc(new_size);
 	if (src_size != 0 && dst)
 	{
+		((char *)dst)[new_size - 1] = '\0';
 		if (src_size < new_size)
 		{
-			((char *)dst)[new_size - 1] = '\0';
 			ft_strlcpy_clear((char *)dst, (char *)src, src_size);
 		}
 		else
@@ -132,7 +147,7 @@ void	*ft_realloc(void *src, size_t src_size, size_t new_size)
 			{
 				((char *)dst)[i] = ((char *)src)[i];
 			}
-			((char *)dst)[i] = '\0';
+		//	ft_strlcpy_clear((char *)dst, (char *)src, new_size);
 		}
 	}
 	free (src);
