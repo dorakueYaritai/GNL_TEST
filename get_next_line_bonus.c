@@ -6,7 +6,7 @@
 /*   By: kakiba <kotto555555@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 13:10:57 by kakiba            #+#    #+#             */
-/*   Updated: 2022/08/31 08:14:20 by kakiba           ###   ########.fr       */
+/*   Updated: 2022/08/31 17:02:48 by kakiba           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ char	*get_next_line(int fd)
 		ft_bzero(remain[fd], BUFFER_SIZE);
 		new_line = ft_strchr(buf, '\n', allocate_size - 1);
 	}
-	if (new_line == NULL)
-		buf = read_file(fd, buf, &new_line, &allocate_size);
+//	if (new_line == NULL)
+	buf = read_file(fd, buf, &new_line, &allocate_size);
 	if (new_line)
 	{
 		if (new_line[1] != '\0')
@@ -75,11 +75,12 @@ char	*read_file(int fd, char *buf, char **new_line,
 		}
 		*allocate_size += read_length;
 	}
-	if (read_length < BUFFER_SIZE && !(*new_line))
-	{
-		buf = ft_realloc(buf, *allocate_size, *allocate_size - BUFFER_SIZE);
+//	if (read_length < BUFFER_SIZE && !(*new_line))
+//	{
+//		printf("ngo");
+//		buf = ft_realloc(buf, *allocate_size, *allocate_size - BUFFER_SIZE);
 //		printf("last: [%s]", buf);
-	}
+//	}
 	//	buf = ft_realloc(buf, *allocate_size - BUFFER_SIZE, *allocate_size);
 	return (buf);
 }
