@@ -6,7 +6,7 @@
 /*   By: kakiba <kotto555555@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 14:42:06 by kakiba            #+#    #+#             */
-/*   Updated: 2022/08/21 20:18:02 by kakiba           ###   ########.fr       */
+/*   Updated: 2022/08/31 20:14:45 by kakiba           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 # include <stdlib.h>
 
 void	*ft_realloc(void *ptr, size_t presize, size_t new_size);
-size_t	ft_strlcpy_clear(char *dst, char *src, size_t dstsize);
+size_t	ft_strlcpy(char *dst, char *src, size_t dstsize);
 char	*ft_strchr(const char *s, int c, size_t length);
 char	*get_next_line(int fd);
 char	*read_file(int fd, char *buf, char **new_line,
