@@ -6,7 +6,7 @@
 /*   By: kakiba <kotto555555@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/31 20:25:36 by kakiba            #+#    #+#             */
-/*   Updated: 2022/08/31 20:38:57 by kakiba           ###   ########.fr       */
+/*   Updated: 2022/08/31 21:14:25 by kakiba           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,4 +78,16 @@ void	*ft_bzero(void *s, size_t n)
 	while (i < n)
 		m[i++] = '\0';
 	return (m);
+}
+
+int	invalid_check(char *buf, int fd)
+{
+	if (buf == NULL)
+		return (1);
+	if (fd == -1)
+	{
+		free (buf);
+		return (1);
+	}
+	return (0);
 }
