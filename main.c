@@ -17,13 +17,15 @@ int	main(int argc, char *argv[])
 	return (0);
 }
 
-// int	main()
-
-// {
-// 	char *s = malloc(15);
-// 	s[20] = 'A';
-// 	free (s);
-// }
+//int	main()
+//
+//{
+//	char *s = malloc(30);
+//	int	fd = open("test1", O_RDONLY);
+//	read(fd, s, 30);
+//	printf("%s", s);
+//	free (s);
+//}
 
 
 // /* ************************************************************************** */

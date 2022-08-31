@@ -6,7 +6,7 @@
 /*   By: kakiba <kotto555555@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/13 13:10:57 by kakiba            #+#    #+#             */
-/*   Updated: 2022/08/30 11:37:22 by kakiba           ###   ########.fr       */
+/*   Updated: 2022/08/31 08:14:20 by kakiba           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,15 +27,13 @@ char	*get_next_line(int fd)
 	new_line = NULL;
 	if (remain[fd][0] != '\0')
 	{
-		printf("remain ga kitayo [%s]\n", remain[fd]);
+//		printf("remain [%s]\n", remain[fd]);
 		allocate_size += ft_strlcpy_clear(buf, remain[fd], BUFFER_SIZE);
 		ft_bzero(remain[fd], BUFFER_SIZE);
 		new_line = ft_strchr(buf, '\n', allocate_size - 1);
 	}
 	if (new_line == NULL)
 		buf = read_file(fd, buf, &new_line, &allocate_size);
-//	printf("[%s]\n", buf);
-	printf("[%d]\n", !!(new_line));
 	if (new_line)
 	{
 		if (new_line[1] != '\0')
@@ -55,6 +53,7 @@ char	*read_file(int fd, char *buf, char **new_line,
 				size_t *allocate_size)
 {
 	ssize_t	read_length;
+	char	*s_last;
 
 	read_length = BUFFER_SIZE;
 	while (*new_line == NULL && read_length == BUFFER_SIZE)
@@ -62,11 +61,11 @@ char	*read_file(int fd, char *buf, char **new_line,
 		buf = ft_realloc(buf, *allocate_size - BUFFER_SIZE, *allocate_size);
 		if (!buf)
 			return (NULL);
-		read_length = read(fd, buf + *allocate_size - BUFFER_SIZE - 1, \
-		BUFFER_SIZE);
-		*new_line = ft_strchr(&buf[*allocate_size - BUFFER_SIZE - 1], \
-			'\n', read_length);
-//		printf("[%d], [%d], [%d]", if (*allocate_size == BUFFER_SIZE + 1UL && \read_length <= 0 && !(*new_line)));
+		s_last = buf + *allocate_size - BUFFER_SIZE - 1;
+		ft_bzero(s_last, BUFFER_SIZE);
+		read_length = read(fd, s_last, BUFFER_SIZE);
+//		printf("read: [%s]", buf);
+		*new_line = ft_strchr(s_last, '\n', read_length);
 		if (*allocate_size == BUFFER_SIZE + 1UL && \
 		read_length <= 0 && !(*new_line))
 		{
@@ -79,7 +78,7 @@ char	*read_file(int fd, char *buf, char **new_line,
 	if (read_length < BUFFER_SIZE && !(*new_line))
 	{
 		buf = ft_realloc(buf, *allocate_size, *allocate_size - BUFFER_SIZE);
-		printf("last: [%s]", buf);
+//		printf("last: [%s]", buf);
 	}
 	//	buf = ft_realloc(buf, *allocate_size - BUFFER_SIZE, *allocate_size);
 	return (buf);
@@ -110,14 +109,12 @@ size_t	ft_strlcpy_clear(char *dst, char *src, size_t dstsize)
 	while (src[i] != '\0' && i + 1 < dstsize)
 	{
 		dst[i] = src[i];
-		i++;
+		++i;
 	}
 	if (dstsize != 0)
 		dst[i] = '\0';
 	while (src[i] != '\0' && i < dstsize)
-	{
 		i++;
-	}
 	return (i);
 }
 
@@ -137,18 +134,9 @@ void	*ft_realloc(void *src, size_t src_size, size_t new_size)
 	{
 		((char *)dst)[new_size - 1] = '\0';
 		if (src_size < new_size)
-		{
 			ft_strlcpy_clear((char *)dst, (char *)src, src_size);
-		}
 		else
-		{
-			size_t	i;
-			for (i = 0; i + 1 < new_size; ++i)
-			{
-				((char *)dst)[i] = ((char *)src)[i];
-			}
-		//	ft_strlcpy_clear((char *)dst, (char *)src, new_size);
-		}
+			ft_strlcpy_clear((char *)dst, (char *)src, new_size);
 	}
 	free (src);
 	src = NULL;
